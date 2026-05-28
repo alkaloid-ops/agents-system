@@ -4,6 +4,7 @@
 # 但不要忽略以下内容
 !.gitignore
 !docker-compose.yml
+!requirements.txt
 !feishu_agent/
 !openwebui_agent/
 !rag_ingestion/
