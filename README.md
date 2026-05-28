@@ -41,6 +41,12 @@
 ```bash
 git clone git@github.com:alkaloid-ops/agents-system.git
 docker compose up -d --build
+
+# 此时milvus向量数据库的空的，没有知识库；本仓库提供了knowledge_docs示例文件作为知识库（shanghai disney 相关文档）
+# 下列命令将示例文档进行embedding并存储到milvus向量数据库，用于RAG检索。
+cd app/
+pip install -r requirements.txt
+python3 /app/rag_ingestion/ingestion.py
 ```
 
 ### 3. 配置环境变量
