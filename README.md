@@ -2,6 +2,9 @@
 
 基于 OpenAI Agents SDK / LangGraph 构建的多智能体系统，集成飞书机器人与 Open WebUI，支持流式对话、图像理解、RAG 检索及多轮记忆。
 
+飞书端视频demo（BV1wV546JELV）：https://www.bilibili.com/video/BV1wV546JELV/?vd_source=aff3b25fd44c72d5fa43b58ed82ddbe4
+网页端视频demo（BV1QjLw6PEDk）：https://www.bilibili.com/video/BV1QjLw6PEDk/?vd_source=aff3b25fd44c72d5fa43b58ed82ddbe4
+
 ## ✨ 主要特性
 
 - **多智能体协作**  
