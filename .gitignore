@@ -1,0 +1,8 @@
+# 忽略根目录下所有直接的文件和目录
+/*
+
+# 但不要忽略以下内容
+!.gitignore
+!docker-compose.yml
+!feishu_agent/
+!openwebui_agent/

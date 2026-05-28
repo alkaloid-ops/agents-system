@@ -1,0 +1,35 @@
+# 版本控制
+.git
+.gitignore
+
+# Python 缓存与虚拟环境
+__pycache__
+*.pyc
+*.pyo
+.venv
+venv
+
+# 运行时数据（数据库、日志等）
+database/
+logs/
+models/
+pipelines/
+*.db
+*.sqlite3
+*.jsonl
+
+# 环境变量文件（敏感信息严禁打入镜像）
+.env
+.env.*
+
+# Docker 相关
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# IDE 配置
+.vscode
+.idea
+
+# 其他
+*.md
