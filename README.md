@@ -72,7 +72,7 @@ EMBEDDING_MODEL = "/app/models/bge-m3"
 RERANK_MODEL = "/app/models/bge-reranker-v2-m3"
 
 MILVUS_HOST = "milvus"
-MILVUS_PORT = "19530
+MILVUS_PORT = "19530"
 ```
 
 ### 4. 后续配置
