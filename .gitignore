@@ -6,3 +6,4 @@
 !docker-compose.yml
 !feishu_agent/
 !openwebui_agent/
+!rag_ingestion/

@@ -52,14 +52,11 @@ def get_weather(date: str, city: str):
         return {"error": f"不支持的城市: {city}，支持的城市: {list(typical.keys())}"}
 
 
-# @tool
-# def web_search(query: str):
-#     """通过联网搜索获取信息"""
-    # with open("/AirPods Pro 3 Comment.txt", "r", encoding="utf-8") as f:
-    #     search_result = f.read()
-    # return f"关于<{query}>的相关搜索结果如下\n\n<{search_result}>"
-    # search = GoogleSerperAPIWrapper()
-    # return f"搜索结果:{search.run(query)}"
+@tool
+def web_search(query: str):
+    """通过联网搜索获取信息"""
+    search = GoogleSerperAPIWrapper()
+    return f"搜索结果:{search.run(query)}"
 
 
 @dataclass

@@ -240,12 +240,9 @@ async def main():
             return base64.b64encode(image_file.read()).decode("utf-8")
 
     queries = [
-        "你好呀, 我的名字是alkaloid, 我喜欢日本料理, 请介绍一下你自己.",
-        # "请帮我查询明天东京的天气",
-        # "请根据我的喜好推荐一些吧.",
+        "你好呀, 我的名字是alkaloid, 请介绍一下你自己.",
         # "你还记得我的名字吗?",
-        # "在迪士尼乐园中，有哪些适合小朋友体验的项目和演出？",
-        # "上海迪士尼有哪些会员制度, 以及不同的会员制度的权益分别是什么样的?",
+        # "请帮我查询上海迪士尼的营业时间"
         # [{"role":"user","content":[{"type": "text", "text": "请提取图片中的文字"},{"type": "image_url", "image_url": f'data:image/jpeg;base64,{encode_image(image_path="./IMG_0110.PNG")}'}]}],
     ]
     MAS = MultiAgentsSystem()

@@ -44,7 +44,7 @@ class MultiAgentsSystem:
 
                 self.sessions[session_id] = SQLiteSession(
                     session_id=session_id,
-                    # db_path="/app/database/sql/conversations_history.db",
+                    db_path="/app/database/sql/conversations_history.db",
                 )
 
             return self.sessions[session_id]
@@ -114,12 +114,13 @@ class MultiAgentsSystem:
                                                     saving_path="/app/logs/openai_agents_system_logs.jsonl")))
 
 
-# 图片OCR任务测试
-# def encode_image(image_path):
-#     with open(image_path, "rb") as image_file:
-#         return base64.b64encode(image_file.read()).decode("utf-8")
-
 if __name__ == "__main__":
+
+    # 图片OCR任务测试
+    def encode_image(image_path):
+        with open(image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode("utf-8")
+
     MAS = MultiAgentsSystem()
     queries = [
         #  [{
@@ -132,13 +133,9 @@ if __name__ == "__main__":
         #         # },
         #     ],
         # }],
-        "你好, 我叫alkaloid(阿卡洛伊德), 我喜欢日本料理, 请介绍一下你自己.",
-        # "请收集最新的伊朗局势并简要告诉我.",
-        # "请帮我查询明天东京的天气",
-        # "请根据我的喜好推荐一些.",
+        "你好, 我叫alkaloid(阿卡洛伊德), 请介绍一下你自己.",
         # "你还记得我叫什么名字吗?",
-        # "如何在上海迪士尼度假区查看和安排与迪士尼朋友的见面时间及地点？",
-        # "AirPods Pro 3 的评价如何?",
+        # "请帮我查询上海迪士尼的营业时间",
     ]
     for q in queries:
         asyncio.run(MAS.running(query=q, session_id="admin",
