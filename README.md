@@ -31,16 +31,16 @@
 
 - 已安装Docker、Docker compose、Git
 
-### 2. 启动飞书APP与OpenWebUI双端智能体系统（一行命令即可打包镜像、拉取镜像并后台运行）
+### 2. 启动APP与WebUI双端智能体系统（一行命令即可打包镜像、拉取镜像并后台运行）
 
 ```bash
-git clone "本仓库"
+git clone git@github.com:alkaloid-ops/agents-system.git
 docker compose up -d --build
 ```
 
 ### 3. 配置环境变量
 
-创建 `.env` 文件：
+创建 `.env` 文件（保持和docker-compose.yml同级目录下即可）：
 
 ```ini
 OPENAI_API_KEY="大模型API KEY（本地部署可随便填一个字符串）"
