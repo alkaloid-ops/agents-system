@@ -6,6 +6,7 @@ from agents import function_tool, RunContextWrapper
 from typing import List
 from dataclasses import dataclass
 from datetime import datetime
+from tavily import TavilyClient
 from langchain_community.utilities import GoogleSerperAPIWrapper
 import asyncio
 import os
@@ -21,41 +22,16 @@ def get_current_date() -> str:
     return datetime.now().strftime("%Y-%m-%d")
 
 
-@function_tool
-def get_weather(date: str, city: str):
-    """获取某天某个城市的天气(日期格式:YYYY-MM-DD)"""
-    try:
-        parsed_date = datetime.strptime(date, "%Y-%m-%d")
-        standardized_date = parsed_date.strftime("%Y-%m-%d")
-    except ValueError:
-        return {"error": f"日期格式错误，请使用 YYYY-MM-DD 格式，例如: 2026-04-22。当前输入: {date}"}
-
-    typical = {
-        "纽约": "雪/雨",
-        "洛杉矶": "晴",
-        "柏林": "多云",
-        "巴黎": "小雨",
-        "伦敦": "雾",
-        "莫斯科": "雪",
-        "东京": "雨",
-        "上海": "雨"
-    }
-
-    if city in typical:
-        return {
-            "date": standardized_date,
-            "city": city,
-            "weather": typical[city]
-        }
-    else:
-        return {"error": f"不支持的城市: {city}，支持的城市: {list(typical.keys())}"}
-
-
-@function_tool
+@function_tool(needs_approval=True)
 def web_search(query: str):
-    """通过联网搜索获取信息"""
-    search = GoogleSerperAPIWrapper()
-    return f"搜索结果:{search.run(query)}"
+    """通过输入用户的询问来进行联网搜索以获取相关信息"""
+    client = TavilyClient(os.getenv("TAVILY_API_KEY"))
+    response = client.search(
+        query=query,
+        search_depth="fast",
+        time_range="year",
+    )
+    return f"搜索结果如下:\n\n{response["results"]}"
 
 
 @dataclass

@@ -14,8 +14,8 @@ from lark_oapi.api.im.v1 import *
 from lark_oapi.api.cardkit.v1 import *
 from lark_oapi.api.contact.v3 import *
 
-from dotenv import load_dotenv
-# load_dotenv("../../.env")
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv(), override=True)
 
 MAS = MultiAgentsSystem()
 

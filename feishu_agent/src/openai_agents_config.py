@@ -1,10 +1,10 @@
 # src/openai_agents_config.py
 # -*- coding: utf-8 -*-
 
-from openai_agents_tools import get_current_date, get_weather, retrieve_knowledgebase
+from openai_agents_tools import get_current_date, web_search, retrieve_knowledgebase
 from agents import OpenAIChatCompletionsModel, OpenAIResponsesModel, ModelSettings, Agent
 from openai import AsyncOpenAI
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from typing import Literal
 from pydantic import BaseModel
 import os
@@ -14,7 +14,7 @@ os.environ['TRANSFORMERS_OFFLINE'] = '1'
 os.environ['HF_DATASETS_OFFLINE'] = '1'
 
 
-# load_dotenv("../../.env")
+# load_dotenv(find_dotenv(), override=True)
 
 
 class EvaluatorOutput(BaseModel):
@@ -94,9 +94,9 @@ expert_agent_config = {
         tool_choice="auto",
         parallel_tool_calls=True,
         include_usage=True,
-        extra_body={"enable_thinking": True, "enable_search": True}
+        extra_body={"enable_thinking": True, "enable_search": False}
     ),
-    "tools": [get_current_date, get_weather],
+    "tools": [get_current_date, web_search],
     "handoff_description": "An expert agent who is able to handle complex task which need single-step or muti-steps thinking before generating final answer.",
     "instructions": '''
 <role>
@@ -171,7 +171,7 @@ retrieve_agent_config = {
         extra_body={"enable_thinking": True, "enable_search": True}
     ),
     "tools": [
-        # web_search,
+        web_search,
         retrieve_knowledgebase,
         Agent(**retrieve_results_evaluator).as_tool(
             tool_name="retrieve_results_evaluator",
