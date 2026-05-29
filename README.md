@@ -62,6 +62,8 @@ FEISHU_APP_ID = "飞书创建机器人后的APP ID"
 FEISHU_APP_SECRET = "飞书创建机器人后的密钥"
 FEISHU_ROBOT_NAME = "飞书创建机器人的名称"
 
+TAVILY_API_KEY = "Tavily联网搜索服务的密钥"
+
 ROUTER_AGENT_MODEL = "路由智能体模型名称"
 INSTANT_AGENT_MODEL = "快速响应智能体模型名称"
 EXPERT_AGENT_MODEL = "专家推理智能体模型名称"

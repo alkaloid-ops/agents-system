@@ -1,16 +1,15 @@
 # src/langgraph_agents_config.py
 # -*- coding: utf-8 -*-
 
-from langgraph_agents_tools import get_current_date, get_weather, retrieve_knowledgebase
+from langgraph_agents_tools import get_current_date, web_search, retrieve_knowledgebase
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from typing import List, Literal, TypedDict, Annotated, Dict, Any
 from pydantic import BaseModel, Field
 from langchain.messages import HumanMessage
 from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
-from langchain.agents.middleware import SummarizationMiddleware
-from langchain.agents.middleware import TodoListMiddleware
+from langchain.agents.middleware import TodoListMiddleware, SummarizationMiddleware, HumanInTheLoopMiddleware
 from langgraph.graph.message import add_messages
 from langchain_core.messages import AnyMessage
 from langchain.tools import tool
@@ -20,7 +19,7 @@ os.environ['HF_HUB_OFFLINE'] = '1'
 os.environ['TRANSFORMERS_OFFLINE'] = '1'
 os.environ['HF_DATASETS_OFFLINE'] = '1'
 
-# load_dotenv("../../.env")
+load_dotenv(find_dotenv(), override=True)
 
 
 router_model_config = {
@@ -47,7 +46,7 @@ expert_model_config = {
     "api_key": os.getenv("OPENAI_API_KEY"),
     "base_url": os.getenv("BASE_URL"),
     "temperature": 0.2,
-    "extra_body": {"enable_thinking": True, "enable_search": True, "return_reasoning": True},
+    "extra_body": {"enable_thinking": True, "enable_search": False, "return_reasoning": True},
 }
 
 
@@ -57,7 +56,7 @@ retrieve_model_config = {
     "api_key": os.getenv("OPENAI_API_KEY"),
     "base_url": os.getenv("BASE_URL"),
     "temperature": 0.1,
-    "extra_body": {"enable_thinking": True, "enable_search": True, "return_reasoning": True},
+    "extra_body": {"enable_thinking": True, "enable_search": False, "return_reasoning": True},
 }
 
 evaluator_model_config = {
@@ -106,8 +105,8 @@ Your only job is to classify the user query and output the next executor. Never 
 
 <executors>
 - instant_agent: simple, deterministic tasks (greetings, text processing, single-step arithmetic, direct tool queries).
-- expert_agent: tasks requiring reasoning, multi-step logic (eg: ask weather, planning walkout. etc.), analysis, or tool-based tasks, also include image OCR task.
-- retrieve_agent: only about tasks requiring external knowledge retrieval (document QA), especial about disney.
+- expert_agent: tasks requiring reasoning, multi-step logic (eg: ask weather, planning walkout. etc.), analysis, or tool-based tasks, such as latest news, also include image OCR task.
+- retrieve_agent: only about tasks requiring external knowledge retrieval (document QA), only about disney infomations.
 - Fallback: if uncertain, default to expert_agent.
 </executors>
 
@@ -184,7 +183,7 @@ You are an expert agent for complex, reasoning-intensive tasks. Think before ans
 </prohibited>
 """,
     "name": "expert_agent",
-    "tools": [get_current_date, get_weather],
+    "tools": [get_current_date, web_search],
     "middleware": [
         # SummarizationMiddleware(
         #     model="deepseek-v3",
@@ -193,7 +192,10 @@ You are an expert agent for complex, reasoning-intensive tasks. Think before ans
         #     ),
         TodoListMiddleware(
             system_prompt="If you need to use tools, you must follow the ReAct paradigm: first think (reason whether a tool is needed), then act (call the tool), observe the result, and repeat until you have enough information to answer (thinking step by step).",
-        )
+        ),
+        # HumanInTheLoopMiddleware(
+        #     interrupt_on={"web_search": True}
+        # )
     ]
 }
 
@@ -270,7 +272,7 @@ You MUST retrieve context before answering.
 """,
     "name": "retrieve_agent",
     "tools": [
-        # web_search,
+        web_search,
         retrieve_knowledgebase,
         retrieve_results_evaluator,
     ],
@@ -282,6 +284,9 @@ You MUST retrieve context before answering.
         #     ),
         TodoListMiddleware(
             system_prompt="If you need to use tools, you must follow the ReAct paradigm: first think (reason whether a tool is needed), then act (call the tool), observe the result, and repeat until you have enough information to answer (thinking step by step).",
-        )
+        ),
+        # HumanInTheLoopMiddleware(
+        #     interrupt_on={"web_search": True}
+        # )
     ]
 }

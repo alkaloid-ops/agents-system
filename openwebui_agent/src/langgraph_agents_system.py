@@ -49,7 +49,8 @@ class MultiAgentsSystem:
 
     async def _router_agent_node(self, state: AgentState):
 
-        latest_message = state["messages"][-1]
+        latest_message = state["messages"][-1] if isinstance(
+            state["messages"], list) else state["messages"]
 
         response = await self.router_agent.ainvoke(
             input={
@@ -213,6 +214,8 @@ class MultiAgentsSystem:
             if event["event"] == "on_chat_model_stream":
                 if event["data"]["chunk"].content:
                     print(event["data"]["chunk"].content, flush=True, end='')
+                # if "__interrupt__" in event["data"]:
+                #     print(f"\n\nInterrupt: {event['data']['__interrupt__']}")
 
     async def stream_generator(self, query: str | list, user_id: str, collection_name: List[str]):
 
@@ -240,9 +243,10 @@ async def main():
             return base64.b64encode(image_file.read()).decode("utf-8")
 
     queries = [
-        "你好呀, 我的名字是alkaloid, 请介绍一下你自己.",
+        # "你好呀, 我的名字是alkaloid, 请介绍一下你自己.",
         # "你还记得我的名字吗?",
-        # "请帮我查询上海迪士尼的营业时间"
+        # "请帮我查询上海迪士尼的营业时间",
+        "截止目前最新的2026WWDC的5条rumors新闻",
         # [{"role":"user","content":[{"type": "text", "text": "请提取图片中的文字"},{"type": "image_url", "image_url": f'data:image/jpeg;base64,{encode_image(image_path="./IMG_0110.PNG")}'}]}],
     ]
     MAS = MultiAgentsSystem()
@@ -250,7 +254,7 @@ async def main():
     for q in queries:
         await MAS.running(
             query=q,
-            thread_id="admin",
+            user_id="admin",
             collection_name=["disney"]
         )
 

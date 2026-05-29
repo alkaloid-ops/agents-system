@@ -22,7 +22,7 @@ def get_current_date() -> str:
     return datetime.now().strftime("%Y-%m-%d")
 
 
-@function_tool(needs_approval=True)
+@function_tool()
 def web_search(query: str):
     """通过输入用户的询问来进行联网搜索以获取相关信息"""
     client = TavilyClient(os.getenv("TAVILY_API_KEY"))

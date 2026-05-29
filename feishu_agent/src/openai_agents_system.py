@@ -77,35 +77,35 @@ class MultiAgentsSystem:
                 elif isinstance(event.data,  ResponseTextDeltaEvent):
                     print(event.data.delta, flush=True, end='')
 
-        if response.interruptions:
-            state = response.to_state()
-            for interruption in response.interruptions:
-                print(
-                    f"Tool: {interruption.tool_name}\nArgs: {interruption.arguments}\n")
-                user_input = input("Approve? yes/no: ")
-                if user_input.lower() == "yes":
-                    state.approve(interruption)
-                else:
-                    state.reject(interruption)
-            response = Runner.run_streamed(
-                starting_agent=state._current_agent,
-                input=state,
-                session=session,
-                run_config=RunConfig(
-                    session_settings=SessionSettings(limit=100),
-                    tracing_disabled=True,
-                ),
-            )
-            async for event in response.stream_events():
+        # if response.interruptions:
+        #     state = response.to_state()
+        #     for interruption in response.interruptions:
+        #         print(
+        #             f"当前智能体请求使用此工具: {interruption.tool_name}需要人工审核!\n")
+        #         user_input = input("Approve? yes/no: ")
+        #         if user_input.lower() == "yes":
+        #             state.approve(interruption)
+        #         else:
+        #             state.reject(interruption)
+        #     response = Runner.run_streamed(
+        #         starting_agent=state._current_agent,
+        #         input=state,
+        #         session=session,
+        #         run_config=RunConfig(
+        #             session_settings=SessionSettings(limit=100),
+        #             tracing_disabled=True,
+        #         ),
+        #     )
+        #     async for event in response.stream_events():
 
-                if event.type == "raw_response_event":
+        #         if event.type == "raw_response_event":
 
-                    if isinstance(event.data,  ResponseReasoningSummaryTextDeltaEvent):
-                        print(event.data.delta, flush=True, end='')
-                    elif isinstance(event.data,  ResponseFunctionCallArgumentsDeltaEvent):
-                        print(event.data.delta, flush=True, end='')
-                    elif isinstance(event.data,  ResponseTextDeltaEvent):
-                        print(event.data.delta, flush=True, end='')
+        #             if isinstance(event.data,  ResponseReasoningSummaryTextDeltaEvent):
+        #                 print(event.data.delta, flush=True, end='')
+        #             elif isinstance(event.data,  ResponseFunctionCallArgumentsDeltaEvent):
+        #                 print(event.data.delta, flush=True, end='')
+        #             elif isinstance(event.data,  ResponseTextDeltaEvent):
+        #                 print(event.data.delta, flush=True, end='')
 
         asyncio.shield(asyncio.create_task(save_log(user_id=session_id, user_query=query[-1].get("content") if isinstance(query, list) else query, response=response,
                                                     saving_path="/app/logs/openai_agents_system_logs.jsonl")))
@@ -140,36 +140,36 @@ class MultiAgentsSystem:
             if token:
                 yield token
 
-        if response.interruptions:
-            state = response.to_state()
-            for interruption in response.interruptions:
-                yield f"Tool: {interruption.tool_name}\nArgs: {interruption.arguments}\n"
-                user_input = input("Approve? yes/no: ")
-                if user_input.lower() == "yes":
-                    state.approve(interruption)
-                else:
-                    state.reject(interruption)
-            response = Runner.run_streamed(
-                starting_agent=state._current_agent,
-                input=state,
-                session=session,
-                run_config=RunConfig(
-                    session_settings=SessionSettings(limit=100),
-                    tracing_disabled=True,
-                ),
-            )
-            async for event in response.stream_events():
-                token = None
-                if event.type == "raw_response_event":
-                    if isinstance(event.data, ResponseReasoningSummaryTextDeltaEvent):
-                        token = event.data.delta
-                    # elif isinstance(event.data, ResponseFunctionCallArgumentsDeltaEvent):
-                    #     token = event.data.delta
-                    elif isinstance(event.data, ResponseTextDeltaEvent):
-                        token = event.data.delta
+        # if response.interruptions:
+        #     state = response.to_state()
+        #     for interruption in response.interruptions:
+        #         yield f"当前智能体请求使用此工具: {interruption.tool_name}需要人工审核!\n")
+        #         user_input = input("Approve? yes/no: ")
+        #         if user_input.lower() == "yes":
+        #             state.approve(interruption)
+        #         else:
+        #             state.reject(interruption)
+        #     response = Runner.run_streamed(
+        #         starting_agent=state._current_agent,
+        #         input=state,
+        #         session=session,
+        #         run_config=RunConfig(
+        #             session_settings=SessionSettings(limit=100),
+        #             tracing_disabled=True,
+        #         ),
+        #     )
+        #     async for event in response.stream_events():
+        #         token = None
+        #         if event.type == "raw_response_event":
+        #             if isinstance(event.data, ResponseReasoningSummaryTextDeltaEvent):
+        #                 token = event.data.delta
+        #             # elif isinstance(event.data, ResponseFunctionCallArgumentsDeltaEvent):
+        #             #     token = event.data.delta
+        #             elif isinstance(event.data, ResponseTextDeltaEvent):
+        #                 token = event.data.delta
 
-                if token:
-                    yield token
+        #         if token:
+        #             yield token
 
         asyncio.shield(asyncio.create_task(save_log(user_id=session_id, user_query=query[-1].get("content") if isinstance(query, list) else query, response=response,
                                                     saving_path="/app/logs/openai_agents_system_logs.jsonl")))
@@ -194,9 +194,9 @@ if __name__ == "__main__":
         #         # },
         #     ],
         # }],
-        # "你好, 我叫alkaloid(阿卡洛伊德), 请介绍一下你自己.",
+        "你好, 我叫alkaloid(阿卡洛伊德), 请介绍一下你自己.",
         # "你还记得我叫什么名字吗?",
-        "截止目前最新的2026WWDC的5条rumors新闻",
+        # "截止目前最新的2026WWDC的5条rumors新闻",
         # "请帮我查询上海迪士尼的营业时间",
     ]
     for q in queries:

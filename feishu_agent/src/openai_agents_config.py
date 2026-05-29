@@ -14,7 +14,7 @@ os.environ['TRANSFORMERS_OFFLINE'] = '1'
 os.environ['HF_DATASETS_OFFLINE'] = '1'
 
 
-# load_dotenv(find_dotenv(), override=True)
+load_dotenv(find_dotenv(), override=True)
 
 
 class EvaluatorOutput(BaseModel):
