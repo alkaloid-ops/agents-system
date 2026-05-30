@@ -3,6 +3,7 @@
 
 from openai_agents_tools import get_current_date, web_search, retrieve_knowledgebase
 from agents import OpenAIChatCompletionsModel, OpenAIResponsesModel, ModelSettings, Agent
+from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX
 from openai import AsyncOpenAI
 from dotenv import load_dotenv, find_dotenv
 from typing import Literal
@@ -35,8 +36,9 @@ router_agent_config = {
         include_usage=True,
         extra_body={"enable_thinking": False, "enable_search": False},
     ),
-    "instructions": '''
+    "instructions": f'''
 <role>
+{RECOMMENDED_PROMPT_PREFIX}
 You are a task router. 
 Your only job is to classify the user query and output the next executor. Never generate an answer.
 </role>
@@ -192,7 +194,7 @@ retrieve_agent_config = {
     "tools": [
         get_current_date,
         web_search,
-        retrieve_knowledgebase,
+        # retrieve_knowledgebase,
         Agent(**retrieve_results_evaluator).as_tool(
             tool_name="retrieve_results_evaluator",
             tool_description="The tool is to assess retrieved context and decide whether it is sufficient to answer the user query.",
