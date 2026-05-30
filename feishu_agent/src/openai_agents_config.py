@@ -190,6 +190,7 @@ retrieve_agent_config = {
         extra_body={"enable_thinking": True, "enable_search": True},
     ),
     "tools": [
+        get_current_date,
         web_search,
         retrieve_knowledgebase,
         Agent(**retrieve_results_evaluator).as_tool(

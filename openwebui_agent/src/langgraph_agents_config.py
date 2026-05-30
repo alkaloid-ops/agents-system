@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from langchain.messages import HumanMessage
 from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
-from langchain.agents.middleware import TodoListMiddleware, SummarizationMiddleware, HumanInTheLoopMiddleware
+from langchain.agents.middleware import TodoListMiddleware, SummarizationMiddleware, HumanInTheLoopMiddleware, ToolCallLimitMiddleware
 from langgraph.graph.message import add_messages
 from langchain_core.messages import AnyMessage
 from langchain.tools import tool
@@ -96,6 +96,19 @@ class AgentState(TypedDict):
     router_output: Dict[str, Any]
 
 
+search_limit = ToolCallLimitMiddleware(tool_name="web_search", run_limit=2)
+retrieve_limit = ToolCallLimitMiddleware(
+    tool_name="retrieve_knowledgebase", run_limit=3)
+tool_prompt = TodoListMiddleware(
+    system_prompt="If you need to use tools, you must follow the ReAct paradigm: first think (reason whether a tool is needed), then act (call the tool), observe the result, and repeat until you have enough information to answer (thinking step by step).")
+hitl = HumanInTheLoopMiddleware(interrupt_on={"web_search": True})
+# summarization = SummarizationMiddleware(
+#     model="deepseek-v3",
+#     trigger=[("tokens", 5000), ("messages", 10)],
+#     keep=("messages", 5),
+# )
+
+
 router_agent_config = {
     "system_prompt": """
 <role>
@@ -117,11 +130,7 @@ Your only job is to classify the user query and output the next executor. Never 
 """,
     "name": "router_agent",
     "response_format": RouterOutput,
-    # "middleware":[SummarizationMiddleware(
-    #     model="deepseek-v3",
-    #     trigger=[("tokens", 2000), ("messages", 5)],
-    #     keep=("messages", 3),
-    # )]
+    # "middleware": [summarization]
 }
 
 
@@ -146,11 +155,7 @@ You are an instant agent for simple, deterministic tasks. Answer concisely and d
 """,
     "name": "instant_agent",
     "tools": [get_current_date],
-    # "middleware":[SummarizationMiddleware(
-    #     model="deepseek-v3",
-    #     trigger=[("tokens", 3000), ("messages", 8)],
-    #     keep=("messages", 5),
-    # )]
+    # "middleware": [summarization]
 }
 
 expert_agent_config = {
@@ -185,17 +190,10 @@ You are an expert agent for complex, reasoning-intensive tasks. Think before ans
     "name": "expert_agent",
     "tools": [get_current_date, web_search],
     "middleware": [
-        # SummarizationMiddleware(
-        #     model="deepseek-v3",
-        #     trigger=[("tokens", 5000), ("messages", 12)],
-        #     keep=("messages", 8),
-        #     ),
-        TodoListMiddleware(
-            system_prompt="If you need to use tools, you must follow the ReAct paradigm: first think (reason whether a tool is needed), then act (call the tool), observe the result, and repeat until you have enough information to answer (thinking step by step).",
-        ),
-        # HumanInTheLoopMiddleware(
-        #     interrupt_on={"web_search": True}
-        # )
+        tool_prompt,
+        search_limit,
+        # summarization,
+        # hitl,
     ]
 }
 
@@ -272,21 +270,16 @@ You MUST retrieve context before answering.
 """,
     "name": "retrieve_agent",
     "tools": [
+        get_current_date,
         web_search,
         retrieve_knowledgebase,
         retrieve_results_evaluator,
     ],
     "middleware": [
-        # SummarizationMiddleware(
-        #     model="deepseek-v3",
-        #     trigger=[("tokens", 4000), ("messages", 10)],
-        #     keep=("messages", 6),
-        #     ),
-        TodoListMiddleware(
-            system_prompt="If you need to use tools, you must follow the ReAct paradigm: first think (reason whether a tool is needed), then act (call the tool), observe the result, and repeat until you have enough information to answer (thinking step by step).",
-        ),
-        # HumanInTheLoopMiddleware(
-        #     interrupt_on={"web_search": True}
-        # )
+        tool_prompt,
+        retrieve_limit,
+        search_limit,
+        # summarization,
+        # hitl,
     ]
 }
