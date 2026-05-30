@@ -28,7 +28,7 @@ router_model_config = {
     "api_key": os.getenv("OPENAI_API_KEY"),
     "base_url": os.getenv("BASE_URL"),
     "temperature": 0,
-    "extra_body": {"thinking": {"type": "disabled"}},
+    "extra_body": {"enable_thinking": False, "enable_search": False},
 }
 
 instant_model_config = {
@@ -37,7 +37,7 @@ instant_model_config = {
     "api_key": os.getenv("OPENAI_API_KEY"),
     "base_url": os.getenv("BASE_URL"),
     "temperature": 0.2,
-    "extra_body": {"thinking": {"type": "disabled"}},
+    "extra_body": {"enable_thinking": False, "enable_search": False},
 }
 
 expert_model_config = {
@@ -65,7 +65,7 @@ evaluator_model_config = {
     "api_key": os.getenv("OPENAI_API_KEY"),
     "base_url": os.getenv("BASE_URL"),
     "temperature": 0,
-    "extra_body": {"thinking": {"type": "disabled"}},
+    "extra_body": {"enable_thinking": False, "enable_search": False},
 }
 
 
@@ -75,7 +75,7 @@ class RouterOutput(BaseModel):
         "instant_agent",
         "expert_agent",
         "retrieve_agent"
-    ] = Field(description='下一步执行者')
+    ] = Field(description='下一步执行智能体名称')
     answer: None = Field(default=None)
     reasoning: None = Field(default=None)
 

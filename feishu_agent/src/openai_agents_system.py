@@ -34,7 +34,7 @@ class MultiAgentsSystem:
             self.session_lock = asyncio.Lock()
 
         except Exception as e:
-            print(f"智能体实例化异常: {e}")
+            print(f"初始化智能体异常! {e}")
 
     async def create_session(self, session_id: str,) -> SQLiteSession:
 

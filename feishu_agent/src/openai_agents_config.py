@@ -26,10 +26,15 @@ router_agent_config = {
     "name": "router_agent",
     "model": OpenAIChatCompletionsModel(
         model=os.getenv("ROUTER_AGENT_MODEL"),
-        openai_client=AsyncOpenAI(api_key=os.getenv(
-            "OPENAI_API_KEY"), base_url=os.getenv("BASE_URL")),
+        openai_client=AsyncOpenAI(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            base_url=os.getenv("BASE_URL")),
     ),
-    "model_settings": ModelSettings(temperature=0, include_usage=True, extra_body={"enable_thinking": False}),
+    "model_settings": ModelSettings(
+        temperature=0,
+        include_usage=True,
+        extra_body={"enable_thinking": False, "enable_search": False},
+    ),
     "instructions": '''
 <role>
 You are a task router. 
@@ -55,10 +60,17 @@ instant_agent_config = {
     "name": "instant_agent",
     "model": OpenAIChatCompletionsModel(
         model=os.getenv("INSTANT_AGENT_MODEL"),
-        openai_client=AsyncOpenAI(api_key=os.getenv(
-            "OPENAI_API_KEY"), base_url=os.getenv("BASE_URL")),
+        openai_client=AsyncOpenAI(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            base_url=os.getenv("BASE_URL")),
     ),
-    "model_settings": ModelSettings(temperature=0.5, tool_choice="auto", parallel_tool_calls=True, include_usage=True, extra_body={"enable_thinking": False}),
+    "model_settings": ModelSettings(
+        temperature=0.5,
+        tool_choice="auto",
+        parallel_tool_calls=True,
+        include_usage=True,
+        extra_body={"enable_thinking": False, "enable_search": False},
+    ),
     "tools": [get_current_date],
     "handoff_description": "A simple task processing agent who is able to quickly answer questions that do not require complex reasoning or external knowledge retrieval.",
     "instructions": '''
@@ -86,15 +98,16 @@ expert_agent_config = {
     "name": "expert_agent",
     "model": OpenAIChatCompletionsModel(
         model=os.getenv("EXPERT_AGENT_MODEL"),
-        openai_client=AsyncOpenAI(api_key=os.getenv(
-            "OPENAI_API_KEY"), base_url=os.getenv("BASE_URL")),
+        openai_client=AsyncOpenAI(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            base_url=os.getenv("BASE_URL")),
     ),
     "model_settings": ModelSettings(
         temperature=0.5,
         tool_choice="auto",
         parallel_tool_calls=True,
         include_usage=True,
-        extra_body={"enable_thinking": True, "enable_search": False}
+        extra_body={"enable_thinking": True, "enable_search": False},
     ),
     "tools": [get_current_date, web_search],
     "handoff_description": "An expert agent who is able to handle complex task which need single-step or muti-steps thinking before generating final answer.",
@@ -133,10 +146,15 @@ retrieve_results_evaluator = {
     "name": "retrieve_results_evaluator",
     "model": OpenAIChatCompletionsModel(
         model=os.getenv("RETRIEVE_EVALUATOR_MODEL"),
-        openai_client=AsyncOpenAI(api_key=os.getenv(
-            "OPENAI_API_KEY"), base_url=os.getenv("BASE_URL")),
+        openai_client=AsyncOpenAI(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            base_url=os.getenv("BASE_URL")),
     ),
-    "model_settings": ModelSettings(temperature=0, include_usage=True),
+    "model_settings": ModelSettings(
+        temperature=0,
+        include_usage=True,
+        extra_body={"enable_thinking": False, "enable_search": False},
+    ),
     "output_type": EvaluatorOutput,
     "instructions": '''
 <role>
@@ -160,15 +178,16 @@ retrieve_agent_config = {
     "name": "retrieve_agent",
     "model": OpenAIChatCompletionsModel(
         model=os.getenv("RETRIEVE_AGENT_MODEL"),
-        openai_client=AsyncOpenAI(api_key=os.getenv(
-            "OPENAI_API_KEY"), base_url=os.getenv("BASE_URL")),
+        openai_client=AsyncOpenAI(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            base_url=os.getenv("BASE_URL")),
     ),
     "model_settings": ModelSettings(
         temperature=0.1,
         tool_choice="required",
         parallel_tool_calls=False,
         include_usage=True,
-        extra_body={"enable_thinking": True, "enable_search": True}
+        extra_body={"enable_thinking": True, "enable_search": True},
     ),
     "tools": [
         web_search,

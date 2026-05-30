@@ -22,42 +22,52 @@ class MultiAgentsSystem:
 
     def __init__(self):
 
-        self.memory = InMemorySaver()
+        try:
 
-        self.router_agent = create_agent(
-            **router_agent_config,
-            model=init_chat_model(**router_model_config),
-        )
+            self.memory = InMemorySaver()
 
-        self.instant_agent = create_agent(
-            **instant_agent_config,
-            model=init_chat_model(**instant_model_config),
-        )
+            self.router_agent = create_agent(
+                **router_agent_config,
+                model=init_chat_model(**router_model_config),
+            )
 
-        self.expert_agent = create_agent(
-            **expert_agent_config,
-            model=init_chat_model(**expert_model_config),
-        )
+            self.instant_agent = create_agent(
+                **instant_agent_config,
+                model=init_chat_model(**instant_model_config),
+            )
 
-        self.retrieve_agent = create_agent(
-            **retrieve_agent_config,
-            model=init_chat_model(**retrieve_model_config),
-            context_schema=db_info,
-        )
+            self.expert_agent = create_agent(
+                **expert_agent_config,
+                model=init_chat_model(**expert_model_config),
+            )
 
-        self.agents_system = self._build_graph()
+            self.retrieve_agent = create_agent(
+                **retrieve_agent_config,
+                model=init_chat_model(**retrieve_model_config),
+                context_schema=db_info,
+            )
+
+            self.agents_system = self._build_graph()
+
+        except Exception as e:
+            print(f"初始化智能体或编译图异常! {e}")
 
     async def _router_agent_node(self, state: AgentState):
 
-        latest_message = state["messages"][-1] if isinstance(
-            state["messages"], list) else state["messages"]
+        messages = state["messages"]
+        if not isinstance(messages, list):
+            messages = [messages]
+
+        last_human_msg = None
+        for msg in reversed(messages):
+            if isinstance(msg, HumanMessage):
+                last_human_msg = msg
+                break
+
+        input_messages = [last_human_msg] if last_human_msg else []
 
         response = await self.router_agent.ainvoke(
-            input={
-                "messages": [latest_message]
-                if isinstance(latest_message, HumanMessage)
-                else []
-            },
+            input={"messages": input_messages},
         )
 
         parsed = response.get("structured_response")
@@ -243,10 +253,11 @@ async def main():
             return base64.b64encode(image_file.read()).decode("utf-8")
 
     queries = [
-        # "你好呀, 我的名字是alkaloid, 请介绍一下你自己.",
+        "你好呀, 我的名字是alkaloid, 请介绍一下你自己.",
         # "你还记得我的名字吗?",
+        # "请帮我查询今天的日期",
         # "请帮我查询上海迪士尼的营业时间",
-        "截止目前最新的2026WWDC的5条rumors新闻",
+        # "截止目前最新的2026WWDC的5条rumors新闻",
         # [{"role":"user","content":[{"type": "text", "text": "请提取图片中的文字"},{"type": "image_url", "image_url": f'data:image/jpeg;base64,{encode_image(image_path="./IMG_0110.PNG")}'}]}],
     ]
     MAS = MultiAgentsSystem()

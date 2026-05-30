@@ -95,7 +95,12 @@ def extract_langgraph_log(
         usage = getattr(final_msg, "usage_metadata", {}) or {}
         response_metadata = getattr(final_msg, "response_metadata", {}) or {}
 
-        tool_calls_raw = getattr(final_msg, "tool_calls", []) or []
+        tool_calls_raw = []
+
+        for m in ai_messages:
+            tc_list = getattr(m, "tool_calls", []) or []
+            if tc_list:
+                tool_calls_raw.extend(tc_list)
 
         tool_calls = [
             {

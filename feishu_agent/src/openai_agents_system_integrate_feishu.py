@@ -141,7 +141,7 @@ async def process_requests(data):
                 except asyncio.CancelledError:
                     pass
 
-            buffer_time = 10 if messages_buffer[chat_id]["messages"][-1]["type"] == "image" else 2
+            buffer_time = 15 if messages_buffer[chat_id]["messages"][-1]["type"] == "image" else 2
             messages_buffer[chat_id]["task"] = asyncio.create_task(
                 delayed_process(chat_id=chat_id, buffer_time=buffer_time))
 
@@ -361,7 +361,7 @@ async def reply_requests(request_info: Dict[str, Any]):
         loop = asyncio.get_running_loop()
 
         try:
-            async with asyncio.timeout(150):
+            async with asyncio.timeout(300):
 
                 async for token in MAS.stream_generator(
                     query=messages,

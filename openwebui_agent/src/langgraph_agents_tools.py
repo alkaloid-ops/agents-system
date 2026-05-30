@@ -6,6 +6,7 @@ from retriever import main as run_retrieve
 from typing import List
 from dataclasses import dataclass
 from datetime import datetime
+from dotenv import load_dotenv, find_dotenv
 from langchain.tools import tool, ToolRuntime
 from langchain_community.utilities import GoogleSerperAPIWrapper
 from tavily import TavilyClient
@@ -15,6 +16,7 @@ os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 os.environ['HF_HUB_OFFLINE'] = '1'
 os.environ['TRANSFORMERS_OFFLINE'] = '1'
 os.environ['HF_DATASETS_OFFLINE'] = '1'
+load_dotenv(find_dotenv(), override=True)
 
 
 @tool
