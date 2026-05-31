@@ -39,7 +39,7 @@ class db_info:
     collection_name: List[str]
 
 
-@function_tool
+@function_tool(timeout=10)
 async def retrieve_knowledgebase(wrapper: RunContextWrapper[db_info], query: str) -> str:
     """通过检索知识库来获取迪士尼相关信息"""
 

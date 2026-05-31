@@ -186,15 +186,15 @@ retrieve_agent_config = {
     ),
     "model_settings": ModelSettings(
         temperature=0.1,
-        tool_choice="required",
+        tool_choice="auto",
         parallel_tool_calls=False,
         include_usage=True,
-        extra_body={"enable_thinking": True, "enable_search": True},
+        extra_body={"enable_thinking": True, "enable_search": False},
     ),
     "tools": [
         get_current_date,
         web_search,
-        # retrieve_knowledgebase,
+        retrieve_knowledgebase,
         Agent(**retrieve_results_evaluator).as_tool(
             tool_name="retrieve_results_evaluator",
             tool_description="The tool is to assess retrieved context and decide whether it is sufficient to answer the user query.",

@@ -4,7 +4,7 @@
 import base64
 import asyncio
 from typing import List, Dict
-from agents import Agent, Runner, RunConfig, SQLiteSession, SessionSettings
+from agents import Agent, Runner, RunConfig, SQLiteSession, SessionSettings, ToolExecutionConfig
 from agents.extensions.memory import AdvancedSQLiteSession
 from openai.types.responses import ResponseReasoningSummaryTextDeltaEvent, ResponseFunctionCallArgumentsDeltaEvent, ResponseTextDeltaEvent
 
@@ -21,16 +21,12 @@ class MultiAgentsSystem:
         try:
 
             self.instant_agent = Agent(**instant_agent_config)
-
             self.expert_agent = Agent(**expert_agent_config)
-
             self.retrieve_agent = Agent[db_info](**retrieve_agent_config)
-
             self.router_agent = Agent(**router_agent_config,
-                                      handoffs=[self.instant_agent, self.expert_agent, self.retrieve_agent,])
+                                      handoffs=[self.instant_agent, self.expert_agent, self.retrieve_agent])
 
             self.sessions: Dict[str, SQLiteSession] = {}
-
             self.session_lock = asyncio.Lock()
 
         except Exception as e:
@@ -41,7 +37,6 @@ class MultiAgentsSystem:
         async with self.session_lock:
 
             if session_id not in self.sessions:
-
                 self.sessions[session_id] = AdvancedSQLiteSession(
                     session_id=session_id,
                     db_path="/app/database/sql/conversations_history.db",
@@ -63,6 +58,8 @@ class MultiAgentsSystem:
             context=context,
             run_config=RunConfig(
                 session_settings=SessionSettings(limit=100),
+                tool_execution=ToolExecutionConfig(
+                    max_function_tool_concurrency=2),
                 tracing_disabled=True,
             ),
         )
@@ -151,6 +148,7 @@ class MultiAgentsSystem:
             if token:
                 yield token
 
+        asyncio.shield(asyncio.create_task(session.store_run_usage(response)))
         asyncio.shield(asyncio.create_task(save_log(user_id=session_id, user_query=query[-1].get("content") if isinstance(query, list) else query, response=response,
                                                     saving_path="/app/logs/openai_agents_system_logs.jsonl")))
 
