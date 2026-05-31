@@ -15,7 +15,7 @@ from langgraph_agents_config import AgentState
 from langgraph_agents_tools import db_info
 from langgraph_agents_config import router_model_config, instant_model_config, expert_model_config, retrieve_model_config
 from langgraph_agents_config import router_agent_config, instant_agent_config, expert_agent_config, retrieve_agent_config
-from langgraph_agents_system_running_logs import rebuild_input_messages, get_final_answer, save_log
+from langgraph_agents_system_running_logs import get_final_answer, save_log
 
 
 class MultiAgentsSystem:
@@ -54,20 +54,8 @@ class MultiAgentsSystem:
 
     async def _router_agent_node(self, state: AgentState):
 
-        messages = state["messages"]
-        if not isinstance(messages, list):
-            messages = [messages]
-
-        last_human_msg = None
-        for msg in reversed(messages):
-            if isinstance(msg, HumanMessage):
-                last_human_msg = msg
-                break
-
-        input_messages = [last_human_msg] if last_human_msg else []
-
         response = await self.router_agent.ainvoke(
-            input={"messages": input_messages},
+            input={"messages": state["messages"]},
         )
 
         parsed = response.get("structured_response")
@@ -208,11 +196,11 @@ class MultiAgentsSystem:
 
     async def running(self, query: str | list, user_id: str, collection_name: List[str]):
 
-        messages = rebuild_input_messages(query)
+        print(f"传达: {query}")
 
         async for event in self.agents_system.astream_events(
             input={
-                "messages": messages,
+                "messages": HumanMessage(content=query if isinstance(query, list) else query["content"]),
                 "user_id": user_id,
                 "collection_name": collection_name,
             },
@@ -229,11 +217,11 @@ class MultiAgentsSystem:
 
     async def stream_generator(self, query: str | list, user_id: str, collection_name: List[str]):
 
-        messages = rebuild_input_messages(query)
+        print(f"传达: {query}")
 
         async for event in self.agents_system.astream_events(
             input={
-                "messages": messages,
+                "messages": HumanMessage(content=query if isinstance(query, list) else query["content"]),
                 "user_id": user_id,
                 "collection_name": collection_name,
             },
@@ -253,11 +241,11 @@ async def main():
             return base64.b64encode(image_file.read()).decode("utf-8")
 
     queries = [
-        "你好呀, 我的名字是alkaloid, 请介绍一下你自己.",
-        # "你还记得我的名字吗?",
-        # "请帮我查询今天的日期",
-        # "请帮我查询上海迪士尼的营业时间",
-        # "截止目前最新的2026WWDC的5条rumors新闻",
+        {"role": "user", "content": "你好呀, 我的名字是alkaloid, 请介绍一下你自己."},
+        # {"role": "user", "content": "你还记得我的名字吗?"},
+        # {"role": "user", "content": "请帮我查询今天的日期"},
+        # {"role": "user", "content": "请帮我查询上海迪士尼的营业时间"},
+        # {"role": "user", "content": "截止目前最新的2026WWDC的5条rumors新闻"},
         # [{"role":"user","content":[{"type": "text", "text": "请提取图片中的文字"},{"type": "image_url", "image_url": f'data:image/jpeg;base64,{encode_image(image_path="./IMG_0110.PNG")}'}]}],
     ]
     MAS = MultiAgentsSystem()

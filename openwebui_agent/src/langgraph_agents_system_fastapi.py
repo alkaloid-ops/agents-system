@@ -85,9 +85,9 @@ async def chat(request: Request):
     print(f"body: {body}")
 
     if body["stream"] == True:
-        messages = body["messages"][-20:]
+        messages = body["messages"][-1]
 
-        print(messages[-3:])
+        print(f"获取: {messages}")
 
         async def generator():
             try:

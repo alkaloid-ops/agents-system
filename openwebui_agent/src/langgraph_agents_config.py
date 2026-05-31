@@ -1,7 +1,8 @@
 # src/langgraph_agents_config.py
 # -*- coding: utf-8 -*-
 
-from langgraph_agents_tools import get_current_date, web_search, retrieve_knowledgebase
+from langgraph_agents_tools import get_current_date, web_search
+from langgraph_agents_tools import retrieve_knowledgebase
 
 from dotenv import load_dotenv, find_dotenv
 from typing import List, Literal, TypedDict, Annotated, Dict, Any
@@ -86,8 +87,8 @@ class EvaluatorOutput(BaseModel):
 
 
 class AgentState(TypedDict):
-    # messages: Annotated[list[AnyMessage], add_messages]  # 增量模式
-    messages: List[AnyMessage]  # 非增量模式
+    messages: Annotated[list[AnyMessage], add_messages]  # 增量模式
+    # messages: List[AnyMessage]  # 非增量模式
     user_id: str | None
     query: str | None
     collection_name: List[str]

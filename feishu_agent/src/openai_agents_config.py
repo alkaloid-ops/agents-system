@@ -1,7 +1,8 @@
 # src/openai_agents_config.py
 # -*- coding: utf-8 -*-
 
-from openai_agents_tools import get_current_date, web_search, retrieve_knowledgebase
+from openai_agents_tools import get_current_date, web_search
+from openai_agents_tools import retrieve_knowledgebase
 from agents import OpenAIChatCompletionsModel, OpenAIResponsesModel, ModelSettings, Agent
 from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX
 from openai import AsyncOpenAI
